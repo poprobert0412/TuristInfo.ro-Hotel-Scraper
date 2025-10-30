@@ -174,4 +174,3 @@ This project is intended **for educational purposes only**.
 Web scraping may violate certain websites’ Terms of Service.  
 Please be respectful of `turistinfo.ro` and avoid overloading their servers.  
 Use at your own discretion and responsibility.
-````
