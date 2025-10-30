@@ -2,9 +2,7 @@
 
 This is a high-performance, two-phase Python scraping project designed to extract comprehensive accommodation details from `turistinfo.ro`. It navigates the main Brașov index, finds all hotel URLs, and then scrapes the detailed information for each hotel in parallel.
 
-This project uses Selenium and `webdriver-manager` to automate a Chrome browser in headless (invisible) mode, handling JavaScript-driven elements (like clicking buttons to reveal phone numbers) and pagination.
-
-*(Note: The `main_page_scraper.py` in this repository is configured for the main Brașov page. A more advanced version, `all_hotels_scrap.py` (not included), can be used to scrape the entire county index.)*
+This project uses Selenium and `webdriver-manager` to automate a Chrome browser, handling JavaScript-driven elements (like clicking buttons to reveal phone numbers) and pagination.
 
 ## 🚀 Features
 
@@ -16,27 +14,22 @@ This project uses Selenium and `webdriver-manager` to automate a Chrome browser 
 
 ## 📊 Data Extracted
 
-For each hotel, the script gathers the following 12 key data points:
+The project includes two different scrapers for Phase 2:
 
-1.  `url`: The source URL of the hotel's detail page.
-2.  `property_name`: The name of the hotel.
-3.  `address`: The full street address.
-4.  `phone_number`: The revealed contact phone number.
-5.  `full_description`: The complete, expanded description text.
-6.  `capacity`: The guest capacity details.
-7.  `images`: A list of all full-resolution gallery image URLs.
-8.  `politici_copii`: The child policy text.
-9.  `politici_mese`: The meal policy text.
-10. `politici_rezervari`: The reservation policy text.
-11. `politici_plata`: The payment policy text.
-12. `facilities`: The full list of amenities.
+1.  **`every_page_scraper.py` (Full Scrape):** Gathers 12 key data points:
+    * `url`, `property_name`, `address`, `phone_number`
+    * `full_description`, `capacity`, `images` (list)
+    * `politici_copii`, `politici_mese`, `politici_rezervari`, `politici_plata`
+    * `facilities`
+2.  **`phone_number_scraper.py` (Contact-Only Scrape):** A lighter, faster script that only extracts:
+    * `url`, `property_name`, `phone_number`
 
 ## 🛠️ Technologies Used
 
 * **Python 3.x**
 * **Selenium:** For browser automation and interacting with JavaScript.
 * **webdriver-manager:** For automatically downloading and managing the correct ChromeDriver.
-* **concurrent.futures (ThreadPoolExecutor):** For high-speed parallel scraping.
+* **concurrent.futures (ThreadPoolExecutor):** For high-speed parallel scraping in `every_page_scraper.py`.
 * **JSON:** For storing the intermediate and final datasets.
 
 ## ⚙️ Setup & Installation
@@ -75,29 +68,44 @@ This script will browse the main Brașov listings page to build a master list of
     ```bash
     python main_page_scraper.py
     ```
-2.  **Output:** A file named `hotels_for_deep_scrape.json` will be created, containing a list of all hotel URLs from the Brașov page.
+2.  **Output:** A file named `hotels_for_deep_scrape.json` will be created. This file is the **input** for Phase 2.
 
-### Phase 2: Scrape Detailed Data in Parallel (`every_page_scraper.py`)
+### Phase 2: Scrape Detailed Data
 
-This script reads the URL list from Phase 1 and runs multiple browsers in parallel to scrape the final, detailed data at high speed.
+After Phase 1 is complete, you can choose which scraper to run.
+
+#### Option A: Full Data Scrape (Recommended)
+
+This runs the fast, parallel scraper to get *all* 12 data points.
 
 1.  Run the `every_page_scraper.py` script:
     ```bash
     python every_page_scraper.py
     ```
-2.  This will launch 4 (or your configured number) of headless (invisible) browsers. You will see progress in your console as it scrapes URLs concurrently.
-3.  **Output:** A file named `hotel_full_details.json` (or similar) will be created containing the final, detailed data for all properties.
+2.  **Output:** A file named `hotel_full_details.json` (or similar) will be created with the complete dataset.
+
+#### Option B: Contact-Only Scrape
+
+This runs a sequential (slower) scraper to get *only* the property name and phone number.
+
+1.  Run the `phone_number_scraper.py` script:
+    ```bash
+    python phone_number_scraper.py
+    ```
+2.  **Output:** A file named `hotel_contacts_final.json` will be created.
 
 ## 🗂️ Project File Structure
 
 ```
 .
 ├── main_page_scraper.py               # Phase 1: Main Page URL Scraper
-├── every_page_scraper.py              # Phase 2: Parallel Deep Scraper
+├── every_page_scraper.py              # Phase 2: Parallel Full Data Scraper
+├── phone_number_scraper.py            # Phase 2 (Alternative): Contact-Only Scraper
 ├── README.md                          # This file
 │
 ├── hotels_for_deep_scrape.json        # (Generated) Output of Phase 1
-└── hotel_full_details.json            # (Generated) Final output of Phase 2
+├── hotel_full_details.json            # (Generated) Output of the full scraper
+└── hotel_contacts_final.json          # (Generated) Output of the contact-only scraper
 ```
 
 ## ⚠️ Disclaimer
